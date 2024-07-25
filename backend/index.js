@@ -7,6 +7,8 @@ import cors from "cors";
 
 //routes
 import authRoutes from "./routes/auth.js";
+import messageRoutes from "./routes/messages.js";
+import conversationRoutes from "./routes/conversations.js";
 
 dotenv.config();
 
@@ -22,8 +24,10 @@ const io = new Server(server, {
   },
 });
 
+//using the imported routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/conversations', messageRoutes);
+app.use('/api/messages', conversationRoutes);
 
 io.on("connection", (socket) => {
   console.log("a user connected");
