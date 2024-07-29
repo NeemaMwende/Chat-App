@@ -19,7 +19,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             {/* <Route path='/chat' element={<Chat />} />
             <Route path='/conversation' element={<Conversation />} /> */}
-            <Route path='/*' element={<Navigate to='/register' />} />
+            <Route path='/*' element={<Navigate to='/login' />} />
           </>
         ) : (
            <>
