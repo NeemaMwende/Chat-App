@@ -1,11 +1,85 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Login = () => {
+const Register = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", { username, password });
+      localStorage.setItem('token',response.data.token);
+      localStorage.setItem('userId',response.data.userId);
+
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
   return (
-    <div>
-      
+    <div style={styles.container}>
+      <h2 style={styles.title}>Register</h2>
+      <form onSubmit={handleSubmit}>
+        <input 
+          type='text'
+          value={username}
+          required
+          onChange={(e) => setUsername(e.target.value)}
+          style={styles.input}
+        />
+        <input 
+          type='password'
+          value={password}
+          required
+          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
+        />
+        <button type='submit' style={styles.button}>Login</button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default Login
+const styles = {
+  container: {
+    maxWidth: "400px",
+    margin: "0 auto",
+    padding: "20px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px" // Reduced margin
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px" // Added gap for spacing between elements
+  },
+  input: {
+    marginBottom: "10px",
+    padding: "10px", // Reduced padding
+    border: "1px solid #ccc",
+    borderRadius: "5px", // Reduced border-radius for a more standard look
+    fontSize: "16px",
+    width: "100%" // Adjusted width to 100%
+  },
+  button: {
+    backgroundColor: "#007bff",
+    color: "#fff", // Corrected color code
+    border: 'none',
+    borderRadius: "5px", // Reduced border-radius for consistency
+    padding: "10px",
+    cursor: "pointer", // Fixed typo: Cursor -> cursor
+    fontSize: "16px",
+    width: "100%", // Adjusted width to 100% for full width
+    marginLeft: "0" // Removed left margin for better centering
+  }
+}
+
+export default Register;
