@@ -65,7 +65,8 @@ const styles = {
     border: "1px solid #ccc",
     borderRadius: "5px", // Reduced border-radius for a more standard look
     fontSize: "16px",
-    width: "100%" // Adjusted width to 100%
+    width: "90%", // Adjusted width to 100%
+    marginLeft: "10px"
   },
   button: {
     backgroundColor: "#007bff",
@@ -75,8 +76,8 @@ const styles = {
     padding: "10px",
     cursor: "pointer", // Fixed typo: Cursor -> cursor
     fontSize: "16px",
-    width: "100%", // Adjusted width to 100% for full width
-    marginLeft: "0" // Removed left margin for better centering
+    width: "30%", // Adjusted width to 100% for full width
+    marginLeft: "9rem" // Removed left margin for better centering
   }
 }
 
