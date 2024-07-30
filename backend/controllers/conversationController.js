@@ -1,52 +1,50 @@
-import Conversation from "../models/Conversations.js";
-import User from "../models/User.js";
-import Message from "../models/Message.js";
+// controllers/conversationController.js
+import Conversation from '../models/Conversation.js';
+import User from '../models/User.js';
+import Message from '../models/Message.js';
+import mongoose from 'mongoose';
 
 export const createConversation = async (req, res) => {
     try {
-        
-        const {participants} = req.body;
-        const user = await User.findOne({username:{$in:participants}})
+        const { participants } = req.body;
 
-        //participants=['angel','lexin','victor']
-        //users=['angel','lexin','victor']
-        if (users.length!== participants.length) {
-            return res.status(404).json({message: "One or more users not found"});
+        // Find users by username
+        const users = await User.find({ username: { $in: participants } });
+
+        if (users.length !== participants.length) {
+            return res.status(404).json({ message: 'One or more users not found' });
         }
 
-        const participantIds = users.map(user=>user._id)
-        
-        const conversation = new Conversation(participantIds);
+        // Extract user IDs
+        const participantIds = users.map(user => user._id);
+
+        const conversation = new Conversation({ participants: participantIds });
         await conversation.save();
-        res.status(200).json(conversation);
-
-
+        res.status(201).json(conversation);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
 
-export const getConversationByUser = async (req, res) => {
+export const getConversationsByUser = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const conversations = await Conversation.find({participants:userId});
-
+        const userId = req.user._id; // assuming you have user authentication middleware
+        const conversations = await Conversation.find({ participants: userId });
         res.status(200).json(conversations);
-
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
 
-//localhost:5000/api/conversation/get-messages/1234(conversationid)
-export const getMessageByConversation = async (req, res) => {
-    const {conversationId} = req.params;
+
+export const getMessagesByConversation = async (req, res) => {
     try {
-        const messages = await Message.find({conversation:conversationId}).populate('sender', 'username')
-
-        res.status(200).json(messages);
-
+        const messages = await Message.find({ conversationId: req.params.conversationId });
+        console.log("messages",messages)
+        res.json(messages);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).send('Server error');
     }
-}
+};
