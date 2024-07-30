@@ -1,52 +1,61 @@
-import express from "express";
-import { Server } from "socket.io";
-import dotenv from "dotenv";
-import http from "http";
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
 import mongoose from "mongoose";
-import cors from "cors";
+import dotenv from "dotenv";
 
-//routes
-import authRoutes from "./routes/auth.js";
-import messageRoutes from "./routes/messages.js";
-import conversationRoutes from "./routes/conversations.js";
-
-dotenv.config();
-
-const PORT = process.env.PORT || 4000;
+import authRoutes from './routes/auth.js';
+import conversationRoutes from './routes/conversations.js';
+import messageRoutes from './routes/messages.js'
 
 const app = express();
+dotenv.config();
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+    },
 });
 
-//using the imported routes
-app.use('/api/auth', authRoutes);
-app.use('/api/conversations', messageRoutes);
-app.use('/api/messages', conversationRoutes);
+const PORT = process.env.PORT || 4000;
 
-io.on("connection", (socket) => {
-  console.log("a user connected");
-  // Handle other socket events here
-});
-
-//middleware
+// Middleware
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(express.json()); // for parsing application/json
 
-// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     // useNewUrlParser: true,
-    // useUnifiedTopology: true
+    // useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => console.log("db connected"))
+  .catch((err) => console.log(err));
 
-  
-// Start the server
-server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/conversations', conversationRoutes);
+app.use('/api/messages', messageRoutes);
+
+// Socket.IO events
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    // Handle chat message event
+    socket.on('chat message', (message) => {
+        console.log('Message:', message);
+        io.emit('chat message', message); // Broadcast message to all clients
+    });
+
+    // Handle disconnect event
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+// Start Server
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
