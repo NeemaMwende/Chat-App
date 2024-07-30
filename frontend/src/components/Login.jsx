@@ -1,41 +1,70 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+   const navigate = useNavigate();
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post("http://127.0.0.1:4000/api/auth/login", { username, password });
+  //     localStorage.setItem('token',response.data.token);
+  //     localStorage.setItem('userId',response.data.userId);
+
+  //   } catch (error) {
+  //     alert(error.message);
+  //   }
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/login", { username, password });
-      localStorage.setItem('token',response.data.token);
-      localStorage.setItem('userId',response.data.userId);
-
+      const response = await fetch("http://localhost:5173/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'An error occurred');
+      }
+      
+      navigate('/login');
     } catch (error) {
-      alert(error.message);
+      console.error('Error during registration:', error); // Logs the complete error object
+      alert(error.message); // Display the error message
     }
-  }
+  };
+  
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Login</h2>
       <form onSubmit={handleSubmit}>
+        <label>Username:</label>
         <input 
           type='text'
           value={username}
           required
           onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
+          placeholder='Enter your username'
         />
+        <label>Password:</label>
         <input 
           type='password'
           value={password}
           required
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
+          placeholder='Please enter your password'
         />
         <button type='submit' style={styles.button}>Login</button>
       </form>
