@@ -10,12 +10,13 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:5173/api/auth/register", {username,password });
+      await axios.post('http://localhost:4000/api/auth/register', { username, password });
       navigate('/login');
     } catch (error) {
       alert(error.message);
     }
-  }
+  };
+  
 
   return (
     <div style={styles.container}>

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   const { username, password } = req.body;
+  
 
   try {
     const existing = await User.findOne({ username: username });
@@ -29,7 +30,7 @@ export const login = async (req, res) => {
 
   try {
     const existing = await User.findOne({ username: username });
-    if (existing) {
+    if (!existing) {
       return res.status(400).json({ message: "User already registered" });
     }
 
